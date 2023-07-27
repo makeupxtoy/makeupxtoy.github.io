@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFrame Example with Custom PIN</title>
+</head>
+<body>
+    <h1>IFrame Example with Custom PIN</h1>
+    <p>This is an example of loading an external page in an iframe.</p>
+
+    <div id="pinEntry" style="display: none;">
+        <label for="pinInput">Please enter a custom PIN code:</label>
+        <input type="password" id="pinInput">
+        <button onclick="setCustomPIN()">Set PIN</button>
+    </div>
+
+    <div id="pinVerification" style="display: none;">
+        <label for="pinVerify">Please enter your custom PIN:</label>
+        <input type="password" id="pinVerify">
+        <button onclick="checkCustomPIN()">Submit</button>
+    </div>
+
+    <div id="iframeContainer" style="display: none;">
+        <iframe id="externalPage" src="https://app.cinny.in" frameborder="0" width="100%" height="500"></iframe>
+    </div>
+
+    <script>
+        const customPINKey = "customPIN";
+
+        function setCustomPIN() {
+            const customPIN = document.getElementById("pinInput").value;
+            if (customPIN !== "") {
+                localStorage.setItem(customPINKey, customPIN);
+                document.getElementById("pinEntry").style.display = "none"; // Hide custom PIN entry
+                document.getElementById("pinVerification").style.display = "block"; // Show PIN verification
+            }
+        }
+
+        function checkCustomPIN() {
+            const storedCustomPIN = localStorage.getItem(customPINKey);
+            const enteredPIN = document.getElementById("pinVerify").value;
+            if (enteredPIN !== storedCustomPIN) {
+                alert("Incorrect PIN. Access denied.");
+            } else {
+                document.getElementById("pinVerification").style.display = "none"; // Hide PIN verification
+                document.getElementById("iframeContainer").style.display = "block"; // Show the iframe
+            }
+        }
+
+        function handleVisibilityChange() {
+            document.getElementById("iframeContainer").style.display = "none"; // Show custom PIN entry
+            document.getElementById("pinVerify").value = "";
+            document.getElementById("pinInput").value = "";
+            if (!document.hidden) {
+                // The page became visible (from being inactive)
+                const storedCustomPIN = localStorage.getItem(customPINKey);
+                if (storedCustomPIN) {
+                    document.getElementById("pinVerification").style.display = "block"; // Show PIN verification
+                } else {
+                    document.getElementById("pinEntry").style.display = "block"; // Show custom PIN entry
+                }
+            }
+        }
+
+        // Check if custom PIN is already set
+        const storedCustomPIN = localStorage.getItem(customPINKey);
+        if (storedCustomPIN) {
+            document.getElementById("pinVerification").style.display = "block"; // Show PIN verification
+        } else {
+            document.getElementById("pinEntry").style.display = "block"; // Show custom PIN entry
+        }
+
+        // Add a visibility change event listener
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+    </script>
+</body>
+</html>
+
